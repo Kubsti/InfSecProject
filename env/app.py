@@ -7,3 +7,5 @@ app = Flask(__name__)
 def home():
     qrows = getposts()
     return render_template('index.html', rows = qrows, status=True)
+
+@app.route("/register",)        
