@@ -12,6 +12,5 @@ def home():
 def startregistration():     
     if request.method == 'POST':
         userdata = request.get_json()
-        print (type(userdata))
         regreturn = registration(userdata['inputemail'],userdata['inputpassword'])
         return jsonify(answer=regreturn)

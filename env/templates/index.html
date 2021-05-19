@@ -60,7 +60,7 @@
     </body>
     <script>
       var btn = document.getElementById("RegisterButton");
-      var myModal = new bootstrap.Modal(document.getElementById("registerModal"), {});
+      window.myModal = new bootstrap.Modal(document.getElementById("registerModal"), {});
       btn.onclick = function() {
         myModal.show();
       };
@@ -87,7 +87,13 @@
         fetch('http://127.0.0.1:5000/register', options)
           .then(response => response.json())
           .then(response =>{
-            window.alert(response['answer'])
+            var regret= (response['answer']);
+            if(regret  == 'Registration successful'){
+              window.alert("Registration successful");
+              myModal.hide();
+            }else{
+              window.alert(response['answer'])
+            }
           });
       };
     </script>
