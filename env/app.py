@@ -1,5 +1,5 @@
-from flask import Flask, render_template
-from databasemanagement import getposts
+from flask import Flask, render_template, request, jsonify
+from databasemanagement import getposts, registration
 from jinja2 import Environment, select_autoescape
 
 app = Flask(__name__)
@@ -8,4 +8,10 @@ def home():
     qrows = getposts()
     return render_template('index.html', rows = qrows, status=True)
 
-@app.route("/register",)        
+@app.route('/register',methods=['POST'])   
+def startregistration():     
+    if request.method == 'POST':
+        userdata = request.get_json()
+        print (type(userdata))
+        regreturn = registration(userdata['inputemail'],userdata['inputpassword'])
+        return jsonify(answer=regreturn)

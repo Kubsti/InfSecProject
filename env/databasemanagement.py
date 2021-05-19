@@ -6,6 +6,7 @@ def getposts():
         conn = psycopg2.connect(database="testforum",user="postgres",password="Kubsti4146",host="127.0.0.1",port="5432")
         cur = conn.cursor()
         cur.execute("SELECT posttitel, username from posts,hasposts,forumuser WHERE forumuser.randuserid = hasposts.userid AND hasposts.postid = posts.postid")
+        conn.commit()
         rows = cur.fetchall()
         conn.close()
     except psycopg2.OperationalError as e:
@@ -18,14 +19,16 @@ def registration(useremail, password):
         ph = PasswordHasher()
         conn = psycopg2.connect(database="testforum",user="postgres",password="Kubsti4146",host="127.0.0.1",port="5432")
         cur = conn.cursor()
-        cur.execute("SELECT username forumuser WHERE forumuser.username =%s", useremail)
+        cur.execute("SELECT username from forumuser WHERE forumuser.username =%s", (useremail,))
+        conn.commit()
         rows = cur.fetchall()
         if (len(rows) >= 1):
             return "This email already exists"
         else:
-            randuserid = uuid.uuid1()
+            randuserid = str(uuid.uuid1())
             pwhash = ph.hash(password)
-            cur.execute("INSERT into forumuser(randuserid, username, passwordhash) VALUES(%s,%s,%s)", randuserid, useremail,pwhash) 
+            cur.execute("INSERT into forumuser(randuserid, username, passwordhash) VALUES(%s,%s,%s)", (randuserid, useremail,pwhash))
+            conn.commit()
             conn.close()
             return "Registration successful"
     except psycopg2.OperationalError as e:

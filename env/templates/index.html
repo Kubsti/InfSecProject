@@ -14,7 +14,7 @@
                  <a class="nav-link active" aria-current="page" href="#">Home</a>
               </div>
                 <div>
-                  <p style="color:white">his is a secure Forum ;)</p>
+                  <p style="color:white">TShis is a secure Forum ;)</p>
                 </div>
                 <div>
                   <button type="button" id="RegisterButton" class="btn btn-primary">Register</button>
@@ -25,7 +25,7 @@
           {% for row in rows %}
             <div class="card"  style="max-width: none; margin-left:10px; margin-right: 10px; margin-top: 10px; margin-bottom: 10px;">
               <div class="card-body">
-                <h5 class="card-title">{{row[0]|safe}}</h5>
+                <h5 class="card-title">{{row[0]}}</h5> <!-- change to {{row[0]|safe}} for xss demonstration-->
                 <h6 class="card-subtitle mb-2 text-muted">{{row[1]}}</h6>
                 <a href="#" class="stretched-link" onclick="testFunction()" ></a>
               </div>
@@ -40,14 +40,14 @@
                   <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                  <form onsubmit="return registration()">
+                  <form id="regform" onsubmit="registration();return false">
                     <div class="mb-3">
-                      <label for="InputEmai1" class="form-label">Email address</label>
+                      <label for="InputEmail1" class="form-label">Email address</label>
                       <input type="email" class="form-control" id="InputEmail" aria-describedby="emailHelp" required>
                       <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
                     </div>
                     <div class="mb-3">
-                      <label for="InputPassword" class="form-label">Password</label>
+                      <label for="InputPassword1" class="form-label">Password</label>
                       <input type="password" class="form-control" id="InputPassword" required>
                     </div>
                     <button type="submit" id="startRegistartion" class="btn btn-primary">Register</button>
@@ -71,12 +71,24 @@
       }
     </script>
     <script>
-      function registration(){
-        var email = document.getElementById("InputEmail")
-        var password = document.getElementById("InputPassword")
-        $.ajax({
-
-        });
+      async function registration(){
+        var form = document.getElementById("regform");
+        var email =  form.elements[0].value;
+        var password = form.elements[2].value;
+        const params = {
+        "inputemail": email,
+        "inputpassword": password,
+        };
+        const options = {
+          method: 'POST',
+          headers:{'content-type': 'application/json'},
+          body: JSON.stringify(params)
+        };
+        fetch('http://127.0.0.1:5000/register', options)
+          .then(response => response.json())
+          .then(response =>{
+            window.alert(response['answer'])
+          });
       };
     </script>
 </html> 
