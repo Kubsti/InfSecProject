@@ -18,7 +18,8 @@ def registration(useremail, password):
         ph = PasswordHasher()
         conn = psycopg2.connect(database="testforum",user="postgres",password="Kubsti4146",host="127.0.0.1",port="5432")
         cur = conn.cursor()
-        cur.execute("SELECT username from forumuser WHERE forumuser.username =%s", (useremail,))
+        cur.execute("SELECT username from forumuser WHERE forumuser.username = " +"'" + useremail +"'") 
+        conn.commit() #is there for the sql injecton 
         rows = cur.fetchall()
         if (len(rows) >= 1):
             return "This email already exists"
