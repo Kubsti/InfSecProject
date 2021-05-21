@@ -23,11 +23,11 @@
             </div>
           </nav>
           {% for row in rows %}
-            <div class="card"  style="max-width: none; margin-left:10px; margin-right: 10px; margin-top: 10px; margin-bottom: 10px;">
+            <div id='{{row[2]}}' class="card"  style="max-width: none; margin-left:10px; margin-right: 10px; margin-top: 10px; margin-bottom: 10px;">
               <div class="card-body">
                 <h5 class="card-title">{{row[0]}}</h5> <!-- change to {{row[0]|safe}} for xss demonstration-->
                 <h6 class="card-subtitle mb-2 text-muted">{{row[1]}}</h6>
-                <a href="#" class="stretched-link" onclick="testFunction()" ></a>
+                <a href="#" class="stretched-link" onclick="getComments()" ></a>
               </div>
             </div>
           {% endfor %}
@@ -42,7 +42,7 @@
                 <div class="modal-body">
                   <form id="regform" onsubmit="registration();return false">
                     <div class="mb-3">
-                      <label for="InputEmail1" class="form-label">Email address</label>
+                      <label for="InputEmail1" class="form-label">Username</label>
                       <input type="text" class="form-control" id="InputEmail" aria-describedby="emailHelp" required>
                       <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
                     </div>
@@ -57,6 +57,9 @@
             </div>
           </div>
 
+          <div id="postModal" class="modal-dialog modal-xl">
+
+          </div>
     </body>
     <script>
       var btn = document.getElementById("RegisterButton");
@@ -66,8 +69,22 @@
       };
     </script>
     <script>
-      function testFunction(){
-        window.alert("test succesfull")
+      async function getComments(){
+        document.body.onclick = function(evt){
+          var evt = window.event || evt;
+          var el = evt.target || evt.srcElement,
+            id = el.id;
+          while(!id && el.tagName !== 'BODY'){
+            el = el.parentNode;
+            id = el.id;
+          }
+
+          if(typeof id !== 'undefined'){
+            window.alert(id);
+          }
+          
+        }
+        
       }
     </script>
     <script>
@@ -96,6 +113,25 @@
             }
           });
       };
+    </script>
+    <script>
+      function escape_html(str) {
+  
+        if ((str===null) || (str===''))
+              return false;
+        else
+          str = str.toString();
+        
+        var map = {
+          '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+        };
+      
+        return str.replace(/[&<>"']/g, function(m) { return map[m]; });
+      }
     </script>
 </html> 
 
