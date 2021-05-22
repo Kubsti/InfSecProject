@@ -16,9 +16,9 @@
                 <div>
                   <p style="color:white">TShis is a secure Forum ;)</p>
                 </div>
-                <div>
+                <div id="navButtons">
                   <button type="button" id="RegisterButton" class="btn btn-primary">Register</button>
-                  <button type="button" class="btn btn-light">Login</button>  
+                  <button type="button" id="LoginButton" class="btn btn-light">Login</button>  
                 </div>
             </div>
           </nav>
@@ -56,6 +56,31 @@
             </div>
           </div>
 
+          <div class="modal fade" id="loginModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="staticBackdropLabel">Login</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <form id="logform" onsubmit="Login();return false">
+                    <div class="mb-3">
+                      <label for="InputEmail2" class="form-label">Username</label>
+                      <input type="text" class="form-control" id="InputEmail2" aria-describedby="emailHelp" required>
+                      <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
+                    </div>
+                    <div class="mb-3">
+                      <label for="InputPassword2" class="form-label">Password</label>
+                      <input type="password" class="form-control" id="InputPassword2" required>
+                    </div>
+                    <button type="submit" id="startLogin" class="btn btn-primary">Log in</button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div class ="modal fade" id="fadepostclickedModal" aria-hidden="true" style="overflow-y: auto;">
             <div id="postclickedModal" class="modal-dialog modal-xl modal-dialog-scrollable">
                 <div class="modal-content">
@@ -72,8 +97,54 @@
                 </div>
             </div>
           </div>
-          
+
+          <footer>
+            <button type="button" class="btn btn-primary" onclick="createPost()">Create a Post</button>
+          </footer>
     </body>
+    <script>
+      function createPost(){
+        
+      }
+    </script>
+    <script>
+      var btn1 = document.getElementById("LoginButton");
+      window.myloginModal = new bootstrap.Modal(document.getElementById("loginModal"), {});
+      btn1.onclick = function() {
+        myloginModal.show();
+      };
+    </script>
+    <script>
+      async function Login(){
+        var form = document.getElementById("logform");
+        var email =  form.elements[0].value;
+        var password = form.elements[1].value;
+        const params = {
+        "inputemail": email,
+        "inputpassword": password,
+        };
+        const options = {
+          method: 'POST',
+          headers:{'content-type': 'application/json'},
+          body: JSON.stringify(params)
+        };
+        const logFetch = async (logRequest)=>{
+          try{
+            const response = await fetch(logRequest, options);
+            const text = await response.text();
+            const data = JSON.parse(text);
+            window.alert(data['answer'])
+          }catch(err){
+            console.log(err);
+              if(document.cookie.match('userID')){
+                window.alert("Login successful");
+                myloginModal.hide();
+              }
+          }
+        }
+        logFetch('http://127.0.0.1:5000/login');
+      }
+    </script>
     <script>
       async function postComments(){
         //to do
@@ -135,8 +206,8 @@
                 commentcard.appendChild(commentbody);
                 document.getElementById("postlcickedbody").appendChild(commentcard);
               }
-              myModal = new bootstrap.Modal(document.getElementById("fadepostclickedModal"), {});
-              myModal.show()
+              myPostModal = new bootstrap.Modal(document.getElementById("fadepostclickedModal"), {});
+              myPostModal.show()
             });
           
         }

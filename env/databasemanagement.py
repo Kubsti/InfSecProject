@@ -1,4 +1,5 @@
 import psycopg2, uuid
+import argon2
 from argon2 import PasswordHasher
 
 def getposts():
@@ -46,3 +47,21 @@ def getcomments(postid):
         print('Unable to connect!\n{0}').format(e)
     
     return postcontent, comments 
+
+def login(useremail, password):
+    try:
+        ph = PasswordHasher()
+        conn = psycopg2.connect(database="testforum",user="postgres",password="Kubsti4146",host="127.0.0.1",port="5432")
+        cur = conn.cursor()
+        cur.execute("SELECT passwordhash, randuserid from forumuser WHERE forumuser.username = %s",(useremail,))
+        rows = cur.fetchall()
+        if(len(rows) == 0):
+            return "We could not find a User for your Username :("
+        else:
+            try:
+                ph.verify((rows[0])[0], password)
+                return "Success", (rows[0])[1]
+            except (argon2.exceptions.InvalidHash,argon2.exceptions.VerifyMismatchError) as e:
+                return "Failure password not recognized"
+    except psycopg2.OperationalError as e:
+        return "An Error occured during the login\n{0}".format(e)

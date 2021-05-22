@@ -1,5 +1,5 @@
-from flask import Flask, render_template, request, jsonify
-from databasemanagement import getposts, registration, getcomments
+from flask import Flask, render_template, request, jsonify, make_response
+from databasemanagement import getposts, registration, getcomments, login
 from jinja2 import Environment, select_autoescape
 
 app = Flask(__name__)
@@ -21,3 +21,16 @@ def sendcomments():
         postid = request.get_json()
         postcontent, comments = getcomments(postid['postid'])
         return jsonify(retpostcontent=postcontent, retcomments=comments)
+
+@app.route('/login',methods=['POST'])
+def startlogin():
+    if request.method == 'POST':
+        logindata = request.get_json()
+        logret = login(logindata['inputemail'],logindata['inputpassword'])
+        print (logret)
+        if((logret[0]) == "Success"):
+            res = make_response()
+            res.set_cookie('userID', (logret[1]))
+            return res
+        else:    
+            return jsonify(answer=logret)
