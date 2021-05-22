@@ -23,11 +23,10 @@
             </div>
           </nav>
           {% for row in rows %}
-            <div id='{{row[2]}}' class="card"  style="max-width: none; margin-left:10px; margin-right: 10px; margin-top: 10px; margin-bottom: 10px;">
+            <div id='{{row[2]}}' class="card"  onclick="getComments()" style="max-width: none; margin-left:10px; margin-right: 10px; margin-top: 10px; margin-bottom: 10px;">
               <div class="card-body">
                 <h5 class="card-title">{{row[0]}}</h5> <!-- change to {{row[0]|safe}} for xss demonstration-->
                 <h6 class="card-subtitle mb-2 text-muted">{{row[1]}}</h6>
-                <a href="#" class="stretched-link" onclick="getComments()" ></a>
               </div>
             </div>
           {% endfor %}
@@ -57,10 +56,29 @@
             </div>
           </div>
 
-          <div id="postModal" class="modal-dialog modal-xl">
-
+          <div class ="modal fade" id="fadepostclickedModal" aria-hidden="true" style="overflow-y: auto;">
+            <div id="postclickedModal" class="modal-dialog modal-xl modal-dialog-scrollable">
+                <div class="modal-content">
+                  <div id="postlcickedheader" class="modal-header">
+                    <h5 class ="modal-title" id="pclickedtitel"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div id="postlcickedbody" class="modal-body">
+                  </div>
+                  <div id="postclickedfooter "class="modal-footer">
+                    <textarea class="form-control" placeholder="Leave a comment here" id="floatingTextarea2" style="height: 100px"></textarea>
+                    <button type="button" class="btn btn-primary" onclick="postComments()">Post a comment</button>
+                  </div>
+                </div>
+            </div>
           </div>
+          
     </body>
+    <script>
+      async function postComments(){
+        //to do
+      };
+    </script>
     <script>
       var btn = document.getElementById("RegisterButton");
       window.myModal = new bootstrap.Modal(document.getElementById("registerModal"), {});
@@ -70,7 +88,6 @@
     </script>
     <script>
       async function getComments(){
-        document.body.onclick = function(evt){
           var evt = window.event || evt;
           var el = evt.target || evt.srcElement,
             id = el.id;
@@ -78,14 +95,51 @@
             el = el.parentNode;
             id = el.id;
           }
-
-          if(typeof id !== 'undefined'){
-            window.alert(id);
-          }
+          const params ={
+            "postid":id
+          };
+          const options ={
+            method: 'POST',
+            headers:{'content-type':'application/json'},
+            body:JSON.stringify(params)
+          };
+          fetch('http://127.0.0.1:5000/getcomments', options)
+            .then(response => response.json())
+            .then(response =>{
+              document.getElementById("postlcickedbody").innerHTML='';
+              var postcontent =(response['retpostcontent']);
+              var comments =(response['retcomments']);
+              postcontent = postcontent[0];
+              let pcontent = document.createElement('p');
+              let breakline = document.createElement('hr');
+              breakline.setAttribute('style','border-top: 1px solid #8c8b8b');
+              pcontent.setAttribute('id','postclickedpostcontent');
+              pcontent.textContent =postcontent[1];
+              document.getElementById("postlcickedbody").appendChild(pcontent);
+              document.getElementById("postlcickedbody").appendChild(breakline);
+              document.getElementById("pclickedtitel").textContent =postcontent[0];
+              for(let i = 0; i< comments.length; i++){
+                let commentcard = document.createElement("div");
+                let commentbody = document.createElement("div");
+                var commenttitel = document.createElement("h5");
+                var commentcreator = document.createElement("h6");
+                commentcard.setAttribute('class', 'card');
+                commentcard.setAttribute('style', 'style="max-width: none; margin-left:10px; margin-right: 10px; margin-top: 10px; margin-bottom: 10px;');
+                commentbody.setAttribute('class', 'card-body');
+                commenttitel.setAttribute('class', 'card-title');
+                commentcreator.setAttribute('class', 'card-subtitle mb-2 text-muted');
+                commenttitel.textContent= (comments[i])[1];
+                commentcreator.textContent= (comments[i])[0];
+                commentbody.appendChild(commenttitel);
+                commentbody.appendChild(commentcreator);
+                commentcard.appendChild(commentbody);
+                document.getElementById("postlcickedbody").appendChild(commentcard);
+              }
+              myModal = new bootstrap.Modal(document.getElementById("fadepostclickedModal"), {});
+              myModal.show()
+            });
           
         }
-        
-      }
     </script>
     <script>
       async function registration(){
@@ -113,25 +167,6 @@
             }
           });
       };
-    </script>
-    <script>
-      function escape_html(str) {
-  
-        if ((str===null) || (str===''))
-              return false;
-        else
-          str = str.toString();
-        
-        var map = {
-          '&': '&amp;',
-        '<': '&lt;',
-        '>': '&gt;',
-        '"': '&quot;',
-        "'": '&#039;'
-        };
-      
-        return str.replace(/[&<>"']/g, function(m) { return map[m]; });
-      }
     </script>
 </html> 
 

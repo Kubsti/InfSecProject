@@ -15,7 +15,9 @@ def startregistration():
         regreturn = registration(userdata['inputemail'],userdata['inputpassword'])
         return jsonify(answer=regreturn)
 
-@app.route('/getcomments',methods=['GET'])
+@app.route('/getcomments',methods=['POST'])
 def sendcomments():
-    if request.method == 'GET':
+    if request.method == 'POST':
         postid = request.get_json()
+        postcontent, comments = getcomments(postid['postid'])
+        return jsonify(retpostcontent=postcontent, retcomments=comments)
