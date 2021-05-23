@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, jsonify, make_response
-from databasemanagement import getposts, registration, getcomments, login
+from databasemanagement import getposts, registration, getcomments, login, insert_post, insert_comment
 from jinja2 import Environment, select_autoescape
 
 app = Flask(__name__)
@@ -34,3 +34,18 @@ def startlogin():
             return res
         else:    
             return jsonify(answer=logret)
+
+@app.route('/createpost',methods=['POSt'])
+def create_post():
+    if request.method == 'POST':
+        postdata = request.get_json()
+        postret = insert_post(postdata['userID'],postdata['posttitel'],postdata['postcontent'])
+        return jsonify(answer=postret)
+
+@app.route('/createcomment',methods=['POST'])
+def create_comment():
+    if request.method == 'POST':
+        commentdata = request.get_json()
+        comret = insert_comment(commentdata['userID'],commentdata['comment'],commentdata['postid'])
+        return jsonify(answer=comret)
+        

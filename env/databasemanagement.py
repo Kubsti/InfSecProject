@@ -6,7 +6,7 @@ def getposts():
     try:
         conn = psycopg2.connect(database="testforum",user="postgres",password="Kubsti4146",host="127.0.0.1",port="5432")
         cur = conn.cursor()
-        cur.execute("SELECT posttitel, username, Posts.postid from posts,hasposts,forumuser WHERE forumuser.randuserid = hasposts.userid AND hasposts.postid = posts.postid")
+        cur.execute("SELECT posttitel, username, Posts.postid from posts,hasposts,forumuser WHERE forumuser.randuserid = hasposts.userid AND hasposts.postid = posts.postid ORDER BY posts.postid DESC")
         rows = cur.fetchall()
         conn.close()
     except psycopg2.OperationalError as e:
@@ -38,7 +38,7 @@ def getcomments(postid):
     try:
         conn = psycopg2.connect(database="testforum",user="postgres",password="Kubsti4146",host="127.0.0.1",port="5432")
         cur = conn.cursor()
-        cur.execute("SELECT posttitel,postcontent from posts,hasposts,forumuser WHERE forumuser.randuserid = hasposts.userid AND hasposts.postid = %s", (postid,))
+        cur.execute("SELECT posttitel,postcontent from posts Where posts.postid = %s", (postid,))
         postcontent = cur.fetchall()
         cur.execute("SELECT username, commentcontent from forumcomments,hascomments,forumuser WHERE hascomments.postid =%s AND hascomments.comentid = forumcomments.commentid", (postid,))
         comments = cur.fetchall()
@@ -65,3 +65,33 @@ def login(useremail, password):
                 return "Failure password not recognized"
     except psycopg2.OperationalError as e:
         return "An Error occured during the login\n{0}".format(e)
+
+def insert_post(userid, posttitel, postcontent):
+    try:
+        conn = psycopg2.connect(database="testforum",user="postgres",password="Kubsti4146",host="127.0.0.1",port="5432")
+        cur = conn.cursor()
+        cur.execute("INSERT INTO posts(postcontent, posttitel) VALUES(%s,%s) RETURNING postid",(postcontent,posttitel))
+        conn.commit()
+        postid = cur.fetchall()
+        postid = (postid[0])[0]
+        cur.execute("INSERT INTO hasposts(userid, postid) VALUES(%s,%s)",(userid,postid))
+        conn.commit()
+        return "Post was created"
+    except psycopg2.OperationalError as e:
+        print (e)
+        return "Error occured while creating a Post"
+
+def insert_comment(userid,commentcontent,postid):
+    try:
+        conn = psycopg2.connect(database="testforum",user="postgres",password="Kubsti4146",host="127.0.0.1",port="5432")
+        cur = conn.cursor()
+        cur.execute("INSERT INTO forumcomments(commentcreator, commentcontent) VALUES(%s,%s) RETURNING commentid", (userid, commentcontent))
+        conn.commit()
+        commentid = cur.fetchall()
+        commentid = (commentid[0])[0]
+        cur.execute("INSERT INTO hascomments(postid, comentid) VALUES(%s,%s)", (postid,commentid))
+        conn.commit()
+        return "Comment was created"
+    except psycopg2.OperationalError as e:
+        print (e)
+        return "Error occured while creating a Comment"
