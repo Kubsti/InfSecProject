@@ -154,11 +154,10 @@
           var form = document.getElementById("createpostform");
           var posttitel =  form.elements[0].value;
           var postcontent = form.elements[1].value;
-          var userID =getCookie('userID');
           const params = {
             "posttitel": posttitel,
             "postcontent": postcontent,
-            "userID": userID
+             credentials: 'same-orgin'
           };
           const options = {
             method: 'POST',
@@ -176,8 +175,7 @@
               }else{
                 window.alert(response['answer'])
               }
-          });
-          
+          });  
         }else{
           window.alert("Log in to create a Post")
         }    
@@ -209,7 +207,7 @@
         const options = {
           method: 'POST',
           headers:{'content-type': 'application/json'},
-          body: JSON.stringify(params)
+          body: JSON.stringify(params),
         };
         const logFetch = async (logRequest)=>{
           try{
@@ -226,7 +224,7 @@
                 let logoutbutton = document.createElement('button');
                 logoutbutton.setAttribute('type','button');
                 logoutbutton.setAttribute('class','btn btn-primary');
-                //logoutbutton.setAttribute('onclick', 'logout()');
+                logoutbutton.setAttribute('onclick', 'logout()');
                 logoutbutton.textContent = "Logout";
                 document.getElementById('navButtons').appendChild(logoutbutton);
               }
@@ -250,26 +248,44 @@
     </script>
     <script>
       function logout(){
-        //document.cookie.match('userID')
-        window.alert("yeaaaaa")
+        const getCookie =(name)=>{
+          return document.cookie.split(';').some(c => {
+            return c.trim().startsWith(name +'=');
+          });
+        }
+
+        const deleteCookie =(name, path, domain)=>{
+          if(getCookie(name)){
+            document.cookie = name + "="+
+            ((path) ? ";path=" +paht : "")+
+            ((domain) ? ";domain=" + domain :"")+
+            ";expires=Thu, 01 Jan 1970 00:00:01 GMT";
+          }
+        }
+
+        deleteCookie('userID')
+        if(document.cookie.match('userID') == null){
+          window.alert("Successfully logged out");
+          location.reload();
+        }
       }
     </script>
     <script>
       async function postComments(){
           if(document.cookie.match('userID')){
-            var userID =getCookie('userID');
+            var userID = getCookie('userID')
             var pcform = document.getElementById("pclickedform");
             var ptext = pcform.elements[0].value;
             if(ptext != null){
               const params = {
-            "userID":userID,
             "comment": ptext,
             "postid": curopenedpost
             };
             const options = {
               method: 'POST',
               headers:{'content-type': 'application/json'},
-              body: JSON.stringify(params)
+              body: JSON.stringify(params),
+              credentials: 'include'
             };
             fetch('http://127.0.0.1:5000/createcomment', options)
               .then(response => response.json())

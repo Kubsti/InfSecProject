@@ -35,17 +35,20 @@ def startlogin():
         else:    
             return jsonify(answer=logret)
 
-@app.route('/createpost',methods=['POSt'])
+@app.route('/createpost',methods=['POST'])
 def create_post():
     if request.method == 'POST':
+        usercookie = request.cookies.get('userID')
         postdata = request.get_json()
-        postret = insert_post(postdata['userID'],postdata['posttitel'],postdata['postcontent'])
+        print(postdata)
+        postret = insert_post(usercookie,postdata['posttitel'],postdata['postcontent'])
         return jsonify(answer=postret)
 
 @app.route('/createcomment',methods=['POST'])
 def create_comment():
     if request.method == 'POST':
         commentdata = request.get_json()
-        comret = insert_comment(commentdata['userID'],commentdata['comment'],commentdata['postid'])
-        return jsonify(answer=comret)
-        
+        usercookie = request.cookies.get('userID')
+        comret = insert_comment(usercookie,commentdata['comment'],commentdata['postid'])
+        return jsonify(answer=comret)   
+
