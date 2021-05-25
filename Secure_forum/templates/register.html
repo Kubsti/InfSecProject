@@ -1,0 +1,26 @@
+{% extends 'layouts.html' %}
+
+{% block content %}
+    <div class="container-fluid">
+        <div style="margin-left: auto; margin-right: auto;">
+            <p style="font-size:x-large; font-weight: 500; text-align: center; margin-top: 10px;">Registration</p>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <form id="regform">
+                    <div class="mb-3">
+                        <label for="InputEmail1" class="form-label" style="font-weight: 500; font-size: larger;">Username</label>
+                        <input type="text" class="form-control" id="InputEmail" aria-describedby="emailHelp" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="InputPassword1" class="form-label" style="font-weight: 500; font-size: larger;">Password</label>
+                        <input type="password" class="form-control" id="InputPassword" required>
+                    </div>
+                    <div class="card text-center">
+                        <button type="submit" id="startRegistartion" class="btn btn-primary">Register</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
