@@ -47,7 +47,9 @@ def getcomments(postid):
         cur = conn.cursor()
         cur.execute("SELECT posttitel,postcontent from posts Where posts.postid = %s", (postid,))
         postcontent = cur.fetchall()
-        cur.execute("SELECT username, commentcontent from forumcomments,hascomments,forumuser WHERE hascomments.postid =%s AND hascomments.comentid = forumcomments.commentid", (postid,))
+
+        
+        cur.execute("SELECT username, commentcontent from forumcomments,hascomments,forumuser WHERE hascomments.postid = %s AND hascomments.comentid = forumcomments.commentid AND forumcomments.commentcreator = forumuser.randuserid", (postid,))
         comments = cur.fetchall()
         conn.close()
     except psycopg2.OperationalError as e:
