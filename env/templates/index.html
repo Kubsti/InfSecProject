@@ -150,10 +150,12 @@
     </script>
     <script>
       function createPost(){
+        console.log("Checking cookie")
         if(document.cookie.match('userID')){
+        console.log("Checked cookie")
           var form = document.getElementById("createpostform");
-          var posttitel =  form.elements[0].value;
-          var postcontent = form.elements[1].value;
+          var posttitel =  document.getElementById("floatingTextarea2").value;
+          var postcontent = document.getElementById("posttitel").value;
           const params = {
             "posttitel": posttitel,
             "postcontent": postcontent,
@@ -392,7 +394,6 @@
         "inputemail": email,
         "inputpassword": password,
         };
-        window.alert("Password: "+password);
         const options = {
           method: 'POST',
           headers:{'content-type': 'application/json'},
@@ -404,7 +405,7 @@
           .then(response =>{
             var regret= (response['answer']);
             if(regret  == 'Registration successful'){
-              //window.alert("Registration successful");
+              window.alert("Registration successful");
               myModal.hide();
             }else{
               window.alert(response['answer'])
