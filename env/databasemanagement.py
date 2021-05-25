@@ -2,9 +2,15 @@ import psycopg2, uuid
 import argon2
 from argon2 import PasswordHasher
 
+conn_db="testforum"
+conn_username="postgres"
+conn_password="Kubsti4146"
+conn_host="loutr.org"
+conn_port=5432
+
 def getposts():
     try:
-        conn = psycopg2.connect(database="testforum",user="postgres",password="Kubsti4146",host="127.0.0.1",port="5432")
+        conn = psycopg2.connect(database=conn_db,user=conn_username,password=conn_password,host=conn_host,port=conn_port)
         cur = conn.cursor()
         cur.execute("SELECT posttitel, username, Posts.postid from posts,hasposts,forumuser WHERE forumuser.randuserid = hasposts.userid AND hasposts.postid = posts.postid ORDER BY posts.postid DESC")
         rows = cur.fetchall()
@@ -17,7 +23,7 @@ def getposts():
 def registration(useremail, password):
     try:
         ph = PasswordHasher()
-        conn = psycopg2.connect(database="testforum",user="postgres",password="Kubsti4146",host="127.0.0.1",port="5432")
+        conn = psycopg2.connect(database=conn_db,user=conn_username,password=conn_password,host=conn_host,port=conn_port)
         cur = conn.cursor()
         cur.execute("SELECT username from forumuser WHERE forumuser.username = " +"'" + useremail +"'") 
         conn.commit() #is there for the sql injecton 
@@ -36,7 +42,7 @@ def registration(useremail, password):
 
 def getcomments(postid):
     try:
-        conn = psycopg2.connect(database="testforum",user="postgres",password="Kubsti4146",host="127.0.0.1",port="5432")
+        conn = psycopg2.connect(database=conn_db,user=conn_username,password=conn_password,host=conn_host,port=conn_port)
         cur = conn.cursor()
         cur.execute("SELECT posttitel,postcontent from posts Where posts.postid = %s", (postid,))
         postcontent = cur.fetchall()
@@ -51,7 +57,7 @@ def getcomments(postid):
 def login(useremail, password):
     try:
         ph = PasswordHasher()
-        conn = psycopg2.connect(database="testforum",user="postgres",password="Kubsti4146",host="127.0.0.1",port="5432")
+        conn = psycopg2.connect(database=conn_db,user=conn_username,password=conn_password,host=conn_host,port=conn_port)
         cur = conn.cursor()
         cur.execute("SELECT passwordhash, randuserid from forumuser WHERE forumuser.username = %s",(useremail,))
         rows = cur.fetchall()
@@ -68,7 +74,7 @@ def login(useremail, password):
 
 def insert_post(userid, posttitel, postcontent):
     try:
-        conn = psycopg2.connect(database="testforum",user="postgres",password="Kubsti4146",host="127.0.0.1",port="5432")
+        conn = psycopg2.connect(database=conn_db,user=conn_username,password=conn_password,host=conn_host,port=conn_port)
         cur = conn.cursor()
         cur.execute("INSERT INTO posts(postcontent, posttitel) VALUES(%s,%s) RETURNING postid",(postcontent,posttitel))
         conn.commit()
@@ -83,7 +89,7 @@ def insert_post(userid, posttitel, postcontent):
 
 def insert_comment(userid,commentcontent,postid):
     try:
-        conn = psycopg2.connect(database="testforum",user="postgres",password="Kubsti4146",host="127.0.0.1",port="5432")
+        conn = psycopg2.connect(database=conn_db,user=conn_username,password=conn_password,host=conn_host,port=conn_port)
         cur = conn.cursor()
         cur.execute("INSERT INTO forumcomments(commentcreator, commentcontent) VALUES(%s,%s) RETURNING commentid", (userid, commentcontent))
         conn.commit()
