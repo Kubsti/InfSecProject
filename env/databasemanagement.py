@@ -32,6 +32,7 @@ def registration(useremail, password):
             return "This email already exists"
         else:
             randuserid = str(uuid.uuid1())
+            print("The password is: "+password)
             pwhash = ph.hash(password)
             cur.execute("INSERT into forumuser(randuserid, username, passwordhash) VALUES(%s,%s,%s)", (randuserid, useremail,pwhash))
             conn.commit()
