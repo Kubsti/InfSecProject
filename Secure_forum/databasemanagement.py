@@ -14,20 +14,23 @@ def getposts():
     
     return rows 
 
-def registration(useremail, password):
+def registration(username, password, useremail):
     try:
         ph = PasswordHasher()
-        conn = psycopg2.connect(database="testforum",user="postgres",password="Kubsti4146",host="127.0.0.1",port="5432")
+        conn = psycopg2.connect(database="secureforum",user="postgres",password="Kubsti4146",host="127.0.0.1",port="5432")
         cur = conn.cursor()
-        cur.execute("SELECT username from forumuser WHERE forumuser.username = " +"'" + useremail +"'") 
-        conn.commit() #is there for the sql injecton 
+        cur.execute("SELECT useremail from forumuser WHERE forumuser.useremail = %s",(useremail,)) 
         rows = cur.fetchall()
+        cur.execute("SELECT username from forumuser WHERE forumuser.username = %s",(username,))
+        usernameexists = cur.fetchall()
         if (len(rows) >= 1):
             return "This email already exists"
+        elif(len(usernameexists) >= 1):
+            return "This username already exists"
         else:
             randuserid = str(uuid.uuid1())
             pwhash = ph.hash(password)
-            cur.execute("INSERT into forumuser(randuserid, username, passwordhash) VALUES(%s,%s,%s)", (randuserid, useremail,pwhash))
+            cur.execute("INSERT into forumuser(randuserid, useremail, username, passwordhash) VALUES(%s,%s,%s,%s)", (randuserid, useremail, username,pwhash))
             conn.commit()
             conn.close()
             return "Registration successful"

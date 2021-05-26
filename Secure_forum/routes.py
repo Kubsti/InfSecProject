@@ -1,7 +1,8 @@
 from Secure_forum import databasemanagement
 from jinja2 import Environment, select_autoescape
-from Secure_forum import app
-from flask import Flask, render_template, request, jsonify, make_response
+from Secure_forum.forms import RegistrationForm, LoginForm
+from Secure_forum import app 
+from flask import Flask, render_template, request, jsonify, make_response, flash, redirect, url_for
 
 @app.route("/")
 @app.route("/home")
@@ -9,27 +10,39 @@ def home():
     qrows = databasemanagement.getposts()
     return render_template('homepage.html', rows = qrows, titel='Hompage', status=True)
 
-@app.route("/register")
-def register():
-    qrows = databasemanagement.getposts()
-    return render_template('register.html', rows = qrows, titel='Registerpage', status=True)
-
 @app.route("/login")
 def login():
-    qrows = databasemanagement.getposts()
-    return render_template('login.html', rows = qrows, titel='Loginpage', status=True)
+    form = LoginForm()
+    if form.validate_on_submit():
+        password = request.form['password']
+        useremail = request.form['email']
+        
+        regreturn = databasemanagement.registration(username,password,useremail)
+        if(regreturn == 'This email already exists' or regreturn == 'This username already exists'):
+            flash(regreturn)
+            return redirect(url_for('register'))
+        else:
+            flash('Registration succesful')
+            return redirect(url_for('loggedin'))
+    return render_template('login.html', form=form,  titel='Loginpage', status=True)
 
 @app.route("/loggedin")
 def loggedin():
     qrows = databasemanagement.getposts()
     return render_template('loggedin.html', rows = qrows, titel='Logged in', status=True)    
 
-@app.route('/register',methods=['POST'])   
-def startregistration():     
-    if request.method == 'POST':
-        userdata = request.get_json()
-        regreturn = databasemanagement.registration(userdata['inputemail'],userdata['inputpassword'])
-        return jsonify(answer=regreturn)
+@app.route('/register',methods=['GET','POST'])   
+def register():     
+    form = RegistrationForm()
+    if form.validate_on_submit():
+        username = request.form['username']
+        password = request.form['password']
+        useremail = request.form['email']
+        regreturn = databasemanagement.registration(username,password,useremail)
+        if(regreturn == 'This email already exists' or regreturn == 'This username already exists'):
+            flash(regreturn)
+            return redirect(url_for('register'))    
+    return render_template('register.html',titel='Registerpage',form=form)
 
 @app.route('/getcomments',methods=['POST'])
 def sendcomments():
@@ -37,19 +50,6 @@ def sendcomments():
         postid = request.get_json()
         postcontent, comments = databasemanagement.getcomments(postid['postid'])
         return jsonify(retpostcontent=postcontent, retcomments=comments)
-
-@app.route('/login',methods=['POST'])
-def startlogin():
-    if request.method == 'POST':
-        logindata = request.get_json()
-        logret = databasemanagement.login(logindata['inputemail'],logindata['inputpassword'])
-        print (logret)
-        if((logret[0]) == "Success"):
-            res = make_response()
-            res.set_cookie('userID', (logret[1]))
-            return res
-        else:    
-            return jsonify(answer=logret)
 
 @app.route('/createpost',methods=['POST'])
 def create_post():
