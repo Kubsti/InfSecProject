@@ -4,7 +4,7 @@ from argon2 import PasswordHasher
 
 def getposts():
     try:
-        conn = psycopg2.connect(database="testforum",user="postgres",password="Kubsti4146",host="127.0.0.1",port="5432")
+        conn = psycopg2.connect(database="secureforum",user="postgres",password="Kubsti4146",host="127.0.0.1",port="5432")
         cur = conn.cursor()
         cur.execute("SELECT posttitel, username, Posts.postid from posts,hasposts,forumuser WHERE forumuser.randuserid = hasposts.userid AND hasposts.postid = posts.postid ORDER BY posts.postid DESC")
         rows = cur.fetchall()
@@ -39,7 +39,7 @@ def registration(username, password, useremail):
 
 def getcomments(postid):
     try:
-        conn = psycopg2.connect(database="testforum",user="postgres",password="Kubsti4146",host="127.0.0.1",port="5432")
+        conn = psycopg2.connect(database="secureforum",user="postgres",password="Kubsti4146",host="127.0.0.1",port="5432")
         cur = conn.cursor()
         cur.execute("SELECT posttitel,postcontent from posts Where posts.postid = %s", (postid,))
         postcontent = cur.fetchall()
@@ -54,9 +54,9 @@ def getcomments(postid):
 def login(useremail, password):
     try:
         ph = PasswordHasher()
-        conn = psycopg2.connect(database="testforum",user="postgres",password="Kubsti4146",host="127.0.0.1",port="5432")
+        conn = psycopg2.connect(database="secureforum",user="postgres",password="Kubsti4146",host="127.0.0.1",port="5432")
         cur = conn.cursor()
-        cur.execute("SELECT passwordhash, randuserid from forumuser WHERE forumuser.username = %s",(useremail,))
+        cur.execute("SELECT passwordhash, randuserid from forumuser WHERE forumuser.useremail = %s",(useremail,))
         rows = cur.fetchall()
         if(len(rows) == 0):
             return "We could not find a User for your Username :("
@@ -71,7 +71,7 @@ def login(useremail, password):
 
 def insert_post(userid, posttitel, postcontent):
     try:
-        conn = psycopg2.connect(database="testforum",user="postgres",password="Kubsti4146",host="127.0.0.1",port="5432")
+        conn = psycopg2.connect(database="secureforum",user="postgres",password="Kubsti4146",host="127.0.0.1",port="5432")
         cur = conn.cursor()
         cur.execute("INSERT INTO posts(postcontent, posttitel) VALUES(%s,%s) RETURNING postid",(postcontent,posttitel))
         conn.commit()
@@ -86,7 +86,7 @@ def insert_post(userid, posttitel, postcontent):
 
 def insert_comment(userid,commentcontent,postid):
     try:
-        conn = psycopg2.connect(database="testforum",user="postgres",password="Kubsti4146",host="127.0.0.1",port="5432")
+        conn = psycopg2.connect(database="secureforum",user="postgres",password="Kubsti4146",host="127.0.0.1",port="5432")
         cur = conn.cursor()
         cur.execute("INSERT INTO forumcomments(commentcreator, commentcontent) VALUES(%s,%s) RETURNING commentid", (userid, commentcontent))
         conn.commit()
@@ -95,6 +95,20 @@ def insert_comment(userid,commentcontent,postid):
         cur.execute("INSERT INTO hascomments(postid, comentid) VALUES(%s,%s)", (postid,commentid))
         conn.commit()
         return "Comment was created"
+    except psycopg2.OperationalError as e:
+        print (e)
+        return "Error occured while creating a Comment"
+
+def getuserid(userid):
+    try:
+        conn = psycopg2.connect(database="secureforum",user="postgres",password="Kubsti4146",host="127.0.0.1",port="5432")
+        cur = conn.cursor()
+        cur.execute("SELECT randuserid from forumuser WHERE forumuser.randuserid = %s",(userid,))
+        rows = cur.fetchall()
+        print (rows)
+        if(len(rows)!= 0):
+            return 'True', (rows[0])[0]
+        return "False"
     except psycopg2.OperationalError as e:
         print (e)
         return "Error occured while creating a Comment"

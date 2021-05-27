@@ -18,3 +18,45 @@ async function registration(){
         .then({
     });
 };
+
+
+function createPost(){
+          var form = document.getElementById("createpostform");
+          var posttitel =  form.elements[0].value;
+          var postcontent = form.elements[1].value;
+          const csrfToken = document.getElementsByName('csrf_token')[0].value;
+          console.log(csrfToken);
+          const params = {
+            "posttitel": posttitel,
+            "postcontent": postcontent,
+             credentials: 'same-orgin'
+          }
+          const options = {
+            method: 'POST',
+            headers:{'content-type': 'application/json', 'X-CSRF-TOKEN': csrfToken},
+            body: JSON.stringify(params)
+            
+          };
+          fetch('http://127.0.0.1:5000/createpost', options)
+            .then(response => response.json())
+            .then(response =>{
+              
+        });       
+}
+
+
+function checkifloggedin(){
+  if(document.cookie.match('userID')){
+    document.getElementById("navButtons").innerHTML='';
+    let logoutbutton = document.createElement('button');
+    logoutbutton.setAttribute('type','button');
+    logoutbutton.setAttribute('class','btn btn-primary');
+    logoutbutton.setAttribute('onclick', 'logout()');
+    logoutbutton.textContent = "Logout";
+    document.getElementById('navButtons').appendChild(logoutbutton)
+    var pathname = window.location.pathname;
+    if(pathname == '/register' || pathname == '/login'){
+      window.location.href = "http://127.0.0.1:5000/home";
+    }
+  }
+}
