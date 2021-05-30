@@ -146,49 +146,7 @@
       }
     </script>
     <script>
-        function getCookie(name) {  
-          var dc = document.cookie;  
-          var prefix = name +"=";  
-          var begin = dc.indexOf("; " + prefix);  
-          if (begin == -1) {  
-              begin = dc.indexOf(prefix);  
-              if (begin != 0)return null;  
-          } else {  
-              begin += 2;  
-          }  
-          var end = document.cookie.indexOf(";", begin);  
-          if (end == -1) {  
-              end = dc.length;  
-          }  
-          return unescape(dc.substring(begin + prefix.length, end));  
-      }
-
-        function getuserID(){
-            var userIDcookie = getCookie('userID')
-        }
-    </script>
-    <script>
         function logout(){
-          const getCookie =(name)=>{
-            return document.cookie.split(';').some(c => {
-              return c.trim().startsWith(name +'=');
-            });
-          }
-  
-          const deleteCookie =(name, path, domain)=>{
-            if(getCookie(name)){
-              document.cookie = name + "="+
-              ((path) ? ";path=" +paht : "")+
-              ((domain) ? ";domain=" + domain :"")+
-              ";expires=Thu, 01 Jan 1970 00:00:01 GMT";
-            }
-          }
-  
-          deleteCookie('userID')
-          if(document.cookie.match('userID') == null){
-            window.alert("Successfully logged out");
-            location.reload();
-          }
           const options ={
             method: 'GET',
           };

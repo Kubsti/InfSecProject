@@ -6,11 +6,13 @@ from flask import Flask, render_template, request, jsonify, make_response, flash
 from flask_login import LoginManager, login_required, logout_user,login_user
 from Secure_forum.user import User
 from flask_wtf.csrf import CSRFProtect
+import flask_login
 
 login_manager = LoginManager()
 login_manager.init_app(app)
 csrf = CSRFProtect(app)
 csrf.init_app(app)
+
 
 @login_manager.user_loader
 def user_loader(email):
@@ -40,7 +42,6 @@ def login():
             user = User(userid)
             login_user(user)
             res = make_response(redirect(url_for('home')))
-            res.set_cookie('userID', userid)
             return res
         else:
             flash(regreturn)
@@ -82,8 +83,8 @@ def create_post():
     if request.method == 'POST':
         posttitel = request.form['posttitel']
         postcontent = request.form['postcontent']
-        usercookie = request.cookies.get('userID')
-        postret = databasemanagement.insert_post(usercookie,posttitel,postcontent)
+        current_user = flask_login.current_user.id
+        postret = databasemanagement.insert_post(current_user,posttitel,postcontent)
         if(postret == 'Post was created'):
             flash(postret)
             return redirect(url_for('home'))
@@ -94,10 +95,10 @@ def create_post():
 @login_required
 def create_comment():
     if request.method == 'POST':
-        usercookie = request.cookies.get('userID')
+        current_user = flask_login.current_user.id
         commentdata = request.form['commentcontent']
         postid = request.form['ccpostid']
-        comret = databasemanagement.insert_comment(usercookie,commentdata,postid)
+        comret = databasemanagement.insert_comment(current_user,commentdata,postid)
         if(comret == 'Comment was created'):
             flash(comret, 'info')
         else:

@@ -25,7 +25,6 @@ function createPost(){
           var posttitel =  form.elements[0].value;
           var postcontent = form.elements[1].value;
           const csrfToken = document.getElementsByName('csrf_token')[0].value;
-          console.log(csrfToken);
           const params = {
             "posttitel": posttitel,
             "postcontent": postcontent,
@@ -46,17 +45,9 @@ function createPost(){
 
 
 function checkifloggedin(){
-  if(document.cookie.match('userID')){
-    document.getElementById("navButtons").innerHTML='';
-    let logoutbutton = document.createElement('button');
-    logoutbutton.setAttribute('type','button');
-    logoutbutton.setAttribute('class','btn btn-primary');
-    logoutbutton.setAttribute('onclick', 'logout()');
-    logoutbutton.textContent = "Logout";
-    document.getElementById('navButtons').appendChild(logoutbutton)
     var pathname = window.location.pathname;
     if(pathname == '/register' || pathname == '/login'){
       window.location.href = "http://127.0.0.1:5000/home";
     }
-  }
 }
+

@@ -19,8 +19,12 @@
               <p style="color:white">TShis is a secure Forum ;)</p>
             </div>
             <div id="navButtons">
+              {%if current_user.is_authenticated %}
+              <button type="button" class="btn btn-primary" onclick="logout()">Logout</button>
+              {%else%}
                 <a class="btn btn-primary" href="{{url_for('register')}}" role="button">SignUp</a>
-                <a class="btn btn-light" href="{{url_for('login')}}" role="button">Login</a>  
+                <a class="btn btn-light" href="{{url_for('login')}}" role="button">Login</a> 
+              {%endif%} 
             </div>
         </div>
       </nav>
