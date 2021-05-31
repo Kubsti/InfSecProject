@@ -46,11 +46,8 @@ function createPost(){
 
 function checkifloggedin(){
     var pathname = window.location.pathname;
-    if(current_user.is_authenticated){
       if(pathname == '/register' || pathname == '/login'){
       window.location.href = "http://127.0.0.1:5000/home";
-      }
-    }
-    
+    }  
 }
 
