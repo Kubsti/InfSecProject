@@ -3,7 +3,7 @@ from jinja2 import Environment, select_autoescape
 from Secure_forum.forms import RegistrationForm, LoginForm,CreatePostForm, CreateCommentForm
 from Secure_forum import app, user
 from flask import Flask, render_template, request, jsonify, make_response, flash, redirect, url_for
-from flask_login import LoginManager, login_required, logout_user,login_user
+from flask_login import LoginManager, login_required, logout_user,login_user, current_user
 from Secure_forum.user import User
 from flask_wtf.csrf import CSRFProtect
 import flask_login
@@ -33,7 +33,9 @@ def home():
 @app.route("/login", methods=['POST','GET'])
 def login():
     form = LoginForm()
-    if form.validate_on_submit():
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
+    elif form.validate_on_submit():
         password = request.form['password']
         useremail = request.form['email']
         regreturn = databasemanagement.login(useremail,password)
@@ -58,7 +60,9 @@ def logout():
 @app.route('/register',methods=['GET','POST'])   
 def register():     
     form = RegistrationForm()
-    if form.validate_on_submit():
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
+    elif  form.validate_on_submit():
         username = request.form['username']
         password = request.form['password']
         useremail = request.form['email']
