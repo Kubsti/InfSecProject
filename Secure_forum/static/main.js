@@ -39,7 +39,6 @@ function createPost(){
           fetch('http://127.0.0.1:5000/createpost', options)
             .then(response => response.json())
             .then(response =>{
-              
         });       
 }
 
