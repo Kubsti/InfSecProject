@@ -52,3 +52,5 @@ def create_comment():
         comret = insert_comment(usercookie,commentdata['comment'],commentdata['postid'])
         return jsonify(answer=comret)   
 
+if __name__ == "__main__":
+    app.run(debug=True) 

@@ -5,14 +5,14 @@ from argon2 import PasswordHasher
 conn_db="testforum"
 conn_username="postgres"
 conn_password="Kubsti4146"
-conn_host="loutr.org"
+conn_host="localhost"
 conn_port=5432
 
 def getposts():
     try:
         conn = psycopg2.connect(database=conn_db,user=conn_username,password=conn_password,host=conn_host,port=conn_port)
         cur = conn.cursor()
-        cur.execute("SELECT posttitel, username, Posts.postid from posts,hasposts,forumuser WHERE forumuser.randuserid = hasposts.userid AND hasposts.postid = posts.postid ORDER BY posts.postid DESC")
+        cur.execute("SELECT posttitel, username, Posts.postid from posts, hasposts,forumuser WHERE forumuser.randuserid = hasposts.userid AND hasposts.postid = posts.postid ORDER BY posts.postid DESC")
         rows = cur.fetchall()
         conn.close()
     except psycopg2.OperationalError as e:
